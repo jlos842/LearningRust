@@ -164,4 +164,132 @@ CHAPTER TAKEAWAYS:
 ---------
 Chapter 2
 ---------
+In this chapter we'll be making a guessing game in Rust. We'll start 
+how most projects start, by using the cargo new command
+
+$ cargo new guessing_game
+
+We started by writting some lines of code, we'll go over them line
+by line:
+
+1 use std::io;
+
+This is much like a c library import to get the i/o functions required
+for this game. std is the standard library and io is a sublibrary
+
+Rust automatically brings a small selection of types into every Rust
+program in what is called the prelude. If a type we need isn't in the
+prelude, then we'll have to include it ourselves with a use statement
+
+3 fn main() {
+
+The fn declares a new function and the parens are where the parameters
+go. The curly is the beginning of the function body
+
+5 let mut guess = String::new();
+
+This is a let statement, it's used to denote a variable. 
+
+IN RUST, VARIABLES ARE IMMUTABLE BY DEFAULT. We'll discuss the consequences
+of that in chapter 3
+
+The mut keyword is used to make a variable mutable. guess is the name
+of the mutable variable we declared
+
+We set the guess variable to equal the result of calling the String::new 
+function. This function returns a String, which is defined as a growable
+UTF-8 encoded bit of text
+
+The '::' sytanx in the new line indicates that new is an associated function
+of the string type. An associated function is implemented on a type, 
+in this case 'String', rather than on a particular instance of a String.
+Most languages refer to this as a static method
+
+The new function is used to create an empty string. There is a new function
+on a lot of types, as it's a comman name for a function that makes a new
+value of some kind
+
+10 // This is a comment
+
+much like C, this is how you make a single line comment
+
+12 io::stdin().read_line(&mut guess)
+13     .expect("Failed to read line");
+
+Now we call the stdin function from the io module. If we didn't write the 
+first line we could've also written this as..
+
+12 std::io::stdin().read_line(&mut guess)
+13     .expect("Failed to read line");
+
+The stdin function returns an instance of the std::io:Stdin, which is a 
+type that represents a handle to the standard input for your terminal
+
+After that we have the .read_line(&mut guess). This calls the read_line
+method on the standard input handle to get input from the user. This function
+has an argument: &mut guess.
+
+This function does what you think it does. It reads the user's input from
+the standard input and puts it into whatever's been passed into it. This is
+why the guess has to be mutable, otherwise the new string couldn't be changed
+
+The & indicates that this arguement is a reference. References are an 
+important part of how Rust works. They allow multiple parts of the code
+access one piece of data without needing to copy that data into memory
+multiple times (pointer?). REFERENCES ARE ALSO IMMUTABLE BY DEFAULT, so
+we had to write &mut guess instead of &guess to make it mutable
+
+The second part of this expression lies on line 13.
+
+13 .expect("Failure to read line");
+
+This could've all been written in one line, but it's easier on the eyes 
+to simply indent here.
+
+The read_line function puts the users input into the string it's been passed,
+but it also returns a value! In this case it returns an io::Result value.
+
+Rust has lots of types named Result in the standard library: There's a 
+genereic result, as well as many specific versions for different submodules
+io::Result is one of those
+
+The Result types are enumerations, often shortened to enums. An enumeration is
+a type that can have a fixed set of values, and those values of the the
+enums variants. Enums are discussed at greater length in Chapter 6
+
+For this result, the variants are Ok or Err. The Ok variant indicates 
+everything went Ok with the opertaion and inside Ok is the 
+successfully generated value. Eff variant indicates that the operation failed
+and Err will contain information about why said operation has failed
+
+The purpose of these Result types is to encode error-handling information
+The values of the Result type, like the values of any type, have methods
+defined on them. An instance of io::Result has an expect method that you can
+call. If this instance of io::Result is an Err value, expect will cause
+the program to crash and display the message that you passed as an argument
+to expect. If the expect function gets an Ok variant of Result, then expect
+will just return whatever the value Ok is holding so we can use it. In
+the case of the read_line function, it's holding the number of bytes read in
+
+If we don't call expect, the program will compile with a warning
+
+warning: unused `std::result::Result` which must be used
+
+Rust is saying that we haven't handled a possible error. The correct way to
+suppress this error is to is to write error handling, but for now we won't
+worry about that
+
+The last line we've written is..
+15 println!("You guessed: {}", guess)
+
+The {} in the string given the println! represent a placeholder. These
+act in much the same way that string formatting options do in C. This will
+simply print whatever is in the second argument of println! where the {}
+are
+
+We can test what we have so far by typing
+
+$ cargo run 
+
+in the terminal
 
