@@ -412,3 +412,39 @@ our game!
 
 Now we'll allow multiple guesses and loop the program!
 
+The loop keyword creates an infinite loop. We can use this to give the users
+more chances to guess the number
+
+More code later...
+
+We've added a loop { ... } block around the code after the input, but now
+we have an issue. The game keeps looping forever without stopping!
+
+We can add a break command to the Ordering::Equal arm of our match 
+and that'll end the process when the user correctly guesses the number.
+
+Now we'll alter our game's code so that it can handle invalid input and
+keep running. Switching from an expect call to a match expression is 
+one way of handling the error instead of crashing on it. Remember that parse
+returns a Result type and Result is an enum that has the variants Ok or Err.
+We can match on these to define behavior after the user types something.
+
+If parse can successfully turn the string into a number, then it'll return
+an Ok value that contains the resulting number. That Ok value will match the
+first arm's pattern, and the match expression will simply return the num
+value that parse put inside Ok. 
+
+If parse is not able to turn the string into a number, it will return an
+Err. The underscore in Err(_) is a catch all value. In the example we're
+basically saying we want to match all Err values, no matter what information
+they have inside of them. The continue command tells the program to go to the
+next iteration of the loop and ask for another guess
+
+And that's basically it! After deleting the code that allows you to see what
+the secret number is, the game is done.
+
+--------------------------------------
+Chapter 3: Common Programming Concepts
+--------------------------------------
+
+
