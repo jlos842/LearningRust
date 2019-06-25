@@ -200,13 +200,13 @@ We set the guess variable to equal the result of calling the String::new
 function. This function returns a String, which is defined as a growable
 UTF-8 encoded bit of text
 
-The '::' sytanx in the new line indicates that new is an associated function
+The '::' syntax in the new line indicates that new is an associated function
 of the string type. An associated function is implemented on a type, 
 in this case 'String', rather than on a particular instance of a String.
 Most languages refer to this as a static method
 
 The new function is used to create an empty string. There is a new function
-on a lot of types, as it's a comman name for a function that makes a new
+on a lot of types, as it's a common name for a function that makes a new
 value of some kind
 
 10 // This is a comment
@@ -292,4 +292,123 @@ We can test what we have so far by typing
 $ cargo run 
 
 in the terminal
+
+Now we'll work on generating the random number. While Rust
+doesn't have a random number generator in the standard library
+the Rust team does have a crate for this functionality.
+
+We import this crate in the Cargo.toml file. Under dependencies
+we write ...
+
+rand = "0.3.14"
+
+The dependencies section is used to list all of the external 
+crates that the project needs to work. We specify the rand
+crate cause we need the rand functionality. We also include 
+a semantic version along with it, Cargo understands this.
+
+When we build the project with a new crate, Cargo will go out
+and fetch the Crate that we need from Rust.io. After the required
+crates have been fetched, Rust will compile the dependencies and 
+then do the project
+
+The nice thing about Cargo is that once we've downloaded and compiled
+the dependencies and compiled the code, it knows not to recompile
+everything. It only recompiles and downloads what's changed
+
+The first time you run the Cargo build command, you'll notice that
+Cargo has created a Cargo.lock file. This file contains all of the
+versions of dependencies and writes them in this file. Then cargo
+will use the dependencies stated in the lock file, so as not to break
+the code when updates come out
+
+However, sometimes we'll want to update the crates, so we use the
+following command
+
+$ cargo update
+
+This'll have Cargo go out and look for dependency version numbers
+that are GREATER than the current PATCH NUMBER, but EQUAL TO the 
+current MINOR NUMBER
+
+So if we have a crate with version 0.3.14 and there existed two 
+patches 0.3.15 and 0.4.0, then the update command will update 
+the dependency to 0.3.15 and not 0.4.0 patch
+
+If we want to use 0.4.0 we'll need to include it in the toml file
+
+Now we'll update the main.rs file
+
+We added a use line to add the Rng related methods to our code.
+Then we use this rand::thread_rng() function to get a random number
+generator from our current thread. Then we use the .gen_range() 
+function to get the random number needed for our guessing game.
+
+Now we'll add some code to compare the random number
+
+You'll see that we have a new use directive that brings in a 
+new type. The std::cmp::Ordering type is now in our scope. Ordering
+is another enum, with values representing for Less, Greater,and Equal
+
+We now have a match expression in our code. Matches are made up of
+arms. An arm consists of a pattern and the code that should be run
+if the value given to the beginning of the match expression fits that
+arm's pattern. Rust takes the value given to match and looks through
+each arm's pattern in turn. The match construct and patterns are
+powerful and discussed in more detail in later chapters
+
+The cmp method compares two values and can be called on anything that
+can be compared. We called it on our guess string and are comparing it
+to a reference of the random number string. This method returns a variant
+of the ordering enum which match then, well, matches on. Each of the 
+different orderings is linked to a specific println! outcome.
+
+If the user guessed 60 and the random number was 48, the cmp method would
+be called on guess with secret_number given as the argument. The cmp method
+will return Ordering::Greater because 60 is greater than 48. The match 
+expression then takes this Ordering::Greater value and starts checking each
+of the arm's pattern. It'll skip by the Ordering::Less pattern, but stop on
+the Ordering::Greater pattern which matches! The associated code in the 
+arm will execute and print "Too big!" to the screen. Then the match expression
+ends; no need to look at the other arms. 
+
+However, this code won't compile and you might see why. We have mismatched 
+types. We're comparing a string to an integer and the compiler doesn't like
+that. Rust has a strong, static type system with type inference. When we
+wrote
+
+12 let mut guess = String::new();
+
+Rust was able to infer that this guess type should be a String, so we needn't
+bother with the type. The secret_number is a number types. Rust defaults to
+an i32 type (A 32 bit unsigned integer).
+
+We want to convert our String to a real number type. We'll do that by adding
+some more lines to our code
+
+20 let guess: u32 = guess.trim().parse()
+21     .expect("Please type a number!");
+
+We create a variable named guess. You might say, "Hey! We already have
+a variable named guess. What gives?" In Rust we are allowed to shadow
+the previous value of guess with a new one. This feature is often used
+when we want to convert values from one type to another. Shadowing is
+nifty because it allows us to reuse our current guess variable without
+creating a new one just for the conversion. 
+
+The guess on the right side of the expression is the original String 
+guess that we obtained from the stdin().readline() method. 
+
+We call the trim() method on this string to trim the whitespace at the 
+beginning and end of the string. It also trims the newline character
+'\n'. Then the parse method turns a string into a number (specified with
+the u32. The colon (:) after guess tells Rust we'll annotate the variable's
+type. 
+
+This call to parse could also generate an error if the user puts some weird
+shit in the guess string. So we also catch that with the expect method and
+after crashing, print a little message to any users trying to undermine 
+our game! 
+
+Now we'll allow multiple guesses and loop the program!
 
