@@ -447,4 +447,45 @@ the secret number is, the game is done.
 Chapter 3: Common Programming Concepts
 --------------------------------------
 
+We assign variables with the let command
+
+let x = 7;
+
+Variables are immutable by default. To make a variable mutable simply
+add the keyword mut in front of the variable name
+
+let mut x = 8;
+
+We can also make a variable constant in Rust with the const keyword where
+let usually is 
+
+const MAX_SIZE: u32 = 8;
+
+You also need to specify the data type of the variable as well
+
+Constants can be declared in any scope, including global
+
+Lastly, constants can only be set to a constant expression. It can't be
+set to the result of a function or any value computed at runtime
+
+Constants are valid for the entire runtime of a program. Use them
+wherever you would use a constant in any other language. 
+
+In the last chapter we shadowed a variable. You can declare a new variable
+with the same name as a previous variable, and the new variable will shadow
+the old one. 
+
+Rustaceans say that the first variable is "shadowed" by the second one. This
+means that the second variable's value is what appears when the variable is
+used. 
+
+Shadowing fulfils a similar function as marking a variable as mut, however,
+we can perform transformations on the variable without changing its 
+imutability 
+
+When we shadow we are effectively creating a new variable, which means that
+we can also cast things to a completely different type while reusing the same
+name. This is useful because we don't have to have different names for what's 
+essentially the same piece of data. 
+
 
